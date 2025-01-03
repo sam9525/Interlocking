@@ -19,7 +19,7 @@ public class Trains {
    *
    * @return the name of the train
    */
-  private String getTrainName() {
+  public String getTrainName() {
     return this.name;
   }
 
@@ -28,7 +28,7 @@ public class Trains {
    *
    * @return the destination track section of the train
    */
-  private int getDestinationTrackSection() {
+  public int getDestinationTrackSection() {
     return this.destinationTrackSection;
   }
 
@@ -37,7 +37,7 @@ public class Trains {
    *
    * @return the current track section of the train
    */
-  private int getCurrentTrackSection() {
+  public int getCurrentTrackSection() {
     return this.currentTrackSection;
   }
 
@@ -46,7 +46,7 @@ public class Trains {
    *
    * @param currentTrackSection the current track section of the train
    */
-  private void setCurrentTrackSection(int currentTrackSection) {
+  public void setCurrentTrackSection(int currentTrackSection) {
     this.currentTrackSection = currentTrackSection;
   }
 }

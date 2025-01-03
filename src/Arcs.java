@@ -15,7 +15,7 @@ public class Arcs {
    *
    * @return the departure track section
    */
-  private TrackSections getDeparture() {
+  public TrackSections getDeparture() {
     return this.departure;
   }
 
@@ -24,7 +24,7 @@ public class Arcs {
    *
    * @return the destination track section
    */
-  private TrackSections getDestination() {
+  public TrackSections getDestination() {
     return this.destination;
   }
 
@@ -33,7 +33,7 @@ public class Arcs {
    *
    * @return the weight of the arc
    */
-  private int getWeight() {
+  public int getWeight() {
     return this.weight;
   }
 }
