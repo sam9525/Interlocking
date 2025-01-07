@@ -223,4 +223,23 @@ public class InterlockingImpl implements Interlocking {
     );
     trackSections.get(entryTrackSection).addTokens();
   }
+
+  /**
+   * Get the train name at a given track section
+   *
+   * @param trackSection the track section
+   * @return the train name
+   */
+  public String getSection(int trackSection) {
+    TrackSections section = trackSections.get(trackSection);
+
+    if (section.getTokens() > 0) {
+      for (Trains train : trains.values()) {
+        if (train.getCurrentTrackSection() == trackSection) {
+          return train.getTrainName();
+        }
+      }
+    }
+    return null;
+  }
 }
