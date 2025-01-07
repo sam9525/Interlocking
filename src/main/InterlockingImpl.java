@@ -242,4 +242,18 @@ public class InterlockingImpl implements Interlocking {
     }
     return null;
   }
+
+  /**
+   * Get the track section of a given train
+   *
+   * @param trainName the train name
+   * @return the track section
+   */
+  public int getTrain(String trainName) {
+    Trains train = trains.get(trainName);
+    if (train == null) {
+      return 0; // Return 0 if train doesn't exist
+    }
+    return train.getCurrentTrackSection();
+  }
 }
