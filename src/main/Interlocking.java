@@ -1,3 +1,5 @@
+package main;
+
 public interface Interlocking {
   /**
    * Adds a train to the rail corridor.
