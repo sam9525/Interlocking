@@ -156,4 +156,71 @@ public class InterlockingImpl implements Interlocking {
     ts.addInputArc(new Arcs(trackSections.get(input), null, weight));
     ts.addOutputArc(new Arcs(null, trackSections.get(output), weight));
   }
+
+  /**
+   * Add a train to the map
+   *
+   * @param trainName the name of the train
+   * @param entryTrackSection the track section the train is entering from
+   * @param destinationTrackSection the track section the train is exiting to
+   * @throws IllegalArgumentException if the train name is already in use, or there is no valid path from the entry to the destination
+   * @throws IllegalStateException if the entry track is already occupied
+   */
+  public void addTrain(
+    String trainName,
+    int entryTrackSection,
+    int destinationTrackSection
+  ) {
+    // Check if train already exists
+    if (trains.containsKey(trainName)) {
+      throw new IllegalArgumentException("Train already exists");
+    }
+
+    // Check if the train is entering from the correct track section and have a valid path to the destination
+    boolean isEntryFromStart = entryTrackSection == 1 || entryTrackSection == 2;
+    boolean isEntryFromEnd =
+      entryTrackSection == 8 ||
+      entryTrackSection == 9 ||
+      entryTrackSection == 10;
+
+    boolean isValidDestinationFromStart =
+      destinationTrackSection == 8 ||
+      destinationTrackSection == 9 ||
+      destinationTrackSection == 10;
+    boolean isValidDestinationFromEnd =
+      destinationTrackSection == 1 || destinationTrackSection == 2;
+    boolean isValidFreightEntryFromStart = entryTrackSection == 3;
+    boolean isValidFreightEntryFromEnd =
+      entryTrackSection == 4 || entryTrackSection == 11;
+    boolean isValidFreightDestinationFromStart =
+      destinationTrackSection == 11 || destinationTrackSection == 4;
+    boolean isValidFreightDestinationFromEnd = destinationTrackSection == 3;
+
+    if (
+      (isEntryFromStart && !isValidDestinationFromStart) ||
+      (isEntryFromEnd && !isValidDestinationFromEnd) ||
+      (
+        !isEntryFromStart &&
+        !isEntryFromEnd &&
+        !isValidFreightEntryFromStart &&
+        !isValidFreightEntryFromEnd
+      ) ||
+      (isValidFreightEntryFromStart && !isValidFreightDestinationFromStart) ||
+      (isValidFreightEntryFromEnd && !isValidFreightDestinationFromEnd)
+    ) {
+      throw new IllegalArgumentException("Invalid path");
+    }
+
+    // Check if the entry track section is occupied
+    if (trackSections.get(entryTrackSection).hasTokens(1)) {
+      throw new IllegalStateException("Entry track section is occupied");
+    }
+
+    // Add the train to the map
+    trains.put(
+      trainName,
+      new Trains(trainName, destinationTrackSection, entryTrackSection)
+    );
+    trackSections.get(entryTrackSection).addTokens();
+  }
 }
