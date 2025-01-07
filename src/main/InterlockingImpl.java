@@ -225,6 +225,16 @@ public class InterlockingImpl implements Interlocking {
   }
 
   /**
+   * Move the trains
+   *
+   * @param trainNames the names of the trains to move
+   * @return the number of trains that have moved
+   */
+  public int moveTrains(String[] trainNames) {
+    return 0;
+  }
+
+  /**
    * Get the train name at a given track section
    *
    * @param trackSection the track section
