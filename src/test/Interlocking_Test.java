@@ -53,4 +53,9 @@ public class Interlocking_Test {
   public void testGetSectionInvalidTrackSection() {
     interlocking.getSection(20);
   }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testGetTrainInvalidTrainName() {
+    interlocking.getTrain("train1");
+  }
 }
