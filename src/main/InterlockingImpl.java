@@ -229,8 +229,16 @@ public class InterlockingImpl implements Interlocking {
    *
    * @param trainNames the names of the trains to move
    * @return the number of trains that have moved
+   * @throws IllegalArgumentException if the train name does not exist or is no longer in the rail corridor
    */
   public int moveTrains(String[] trainNames) {
+    // Check if the train exists
+    for (String trainName : trainNames) {
+      if (!trains.containsKey(trainName)) {
+        throw new IllegalArgumentException("Train does not exist");
+      }
+    }
+
     return 0;
   }
 
