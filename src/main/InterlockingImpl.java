@@ -239,8 +239,13 @@ public class InterlockingImpl implements Interlocking {
    *
    * @param trackSection the track section
    * @return the train name
+   * @throws IllegalArgumentException if the track section does not exist
    */
   public String getSection(int trackSection) {
+    if (!trackSections.containsKey(trackSection)) {
+      throw new IllegalArgumentException("Track section does not exist");
+    }
+
     TrackSections section = trackSections.get(trackSection);
 
     if (section.getTokens() > 0) {
@@ -250,6 +255,7 @@ public class InterlockingImpl implements Interlocking {
         }
       }
     }
+
     return null;
   }
 
