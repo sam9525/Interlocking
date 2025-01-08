@@ -264,12 +264,13 @@ public class InterlockingImpl implements Interlocking {
    *
    * @param trainName the train name
    * @return the track section
+   * @throws IllegalArgumentException if the train does not exist
    */
   public int getTrain(String trainName) {
-    Trains train = trains.get(trainName);
-    if (train == null) {
-      return 0; // Return 0 if train doesn't exist
+    if (!trains.containsKey(trainName)) {
+      throw new IllegalArgumentException("Train does not exist");
     }
-    return train.getCurrentTrackSection();
+
+    return trains.get(trainName).getCurrentTrackSection();
   }
 }
