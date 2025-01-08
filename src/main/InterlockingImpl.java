@@ -239,6 +239,20 @@ public class InterlockingImpl implements Interlocking {
       }
     }
 
+    // Check if the train is in the destination track section
+    // If it is, remove the tokens from the destination track section
+    for (String trainName : trainNames) {
+      Trains curTrain = trains.get(trainName);
+
+      if (
+        curTrain.getCurrentTrackSection() ==
+        curTrain.getDestinationTrackSection()
+      ) {
+        trackSections.get(curTrain.getDestinationTrackSection()).removeTokens();
+        trains.remove(trainName);
+      }
+    }
+
     return 0;
   }
 
