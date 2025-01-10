@@ -58,4 +58,65 @@ public class Interlocking_Test {
   public void testGetTrainInvalidTrainName() {
     interlocking.getTrain("train1");
   }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testMoveTrainsInvalidTrainName() {
+    interlocking.moveTrains(new String[] { "train1", "train2", "train3" });
+  }
+
+  @Test
+  public void testMoveTrainsLeftToRight() {
+    interlocking.addTrain("train1", 1, 9);
+    interlocking.addTrain("train2", 2, 10);
+    interlocking.addTrain("train3", 3, 11);
+    interlocking.moveTrains(new String[] { "train1", "train2", "train3" });
+    assertEquals("train1", interlocking.getSection(5));
+    assertEquals("train2", interlocking.getSection(6));
+    assertEquals("train3", interlocking.getSection(7));
+
+    interlocking.moveTrains(new String[] { "train1", "train2", "train3" });
+    assertEquals("train1", interlocking.getSection(9));
+    assertEquals("train2", interlocking.getSection(10));
+    assertEquals("train3", interlocking.getSection(11));
+
+    interlocking.moveTrains(new String[] { "train1", "train2", "train3" });
+    assertEquals(null, interlocking.getSection(9));
+    assertEquals(null, interlocking.getSection(10));
+    assertEquals(null, interlocking.getSection(11));
+
+    interlocking.addTrain("train4", 3, 4);
+    interlocking.moveTrains(new String[] { "train4" });
+    assertEquals("train4", interlocking.getSection(4));
+
+    interlocking.moveTrains(new String[] { "train4" });
+    assertEquals(null, interlocking.getSection(4));
+  }
+
+  @Test
+  public void testMoveTrainsRightToLeft() {
+    interlocking.addTrain("train1", 9, 1);
+    interlocking.addTrain("train2", 10, 2);
+    interlocking.addTrain("train3", 11, 3);
+    interlocking.moveTrains(new String[] { "train1", "train2", "train3" });
+    assertEquals("train1", interlocking.getSection(5));
+    assertEquals("train2", interlocking.getSection(6));
+    assertEquals("train3", interlocking.getSection(7));
+
+    interlocking.moveTrains(new String[] { "train1", "train2", "train3" });
+    assertEquals("train1", interlocking.getSection(1));
+    assertEquals("train2", interlocking.getSection(2));
+    assertEquals("train3", interlocking.getSection(3));
+
+    interlocking.moveTrains(new String[] { "train1", "train2", "train3" });
+    assertEquals(null, interlocking.getSection(1));
+    assertEquals(null, interlocking.getSection(2));
+    assertEquals(null, interlocking.getSection(3));
+
+    interlocking.addTrain("train4", 4, 3);
+    interlocking.moveTrains(new String[] { "train4" });
+    assertEquals("train4", interlocking.getSection(3));
+
+    interlocking.moveTrains(new String[] { "train4" });
+    assertEquals(null, interlocking.getSection(3));
+  }
 }
