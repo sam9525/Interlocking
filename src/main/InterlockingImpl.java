@@ -2,8 +2,12 @@ package main;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 
 public class InterlockingImpl implements Interlocking {
 
@@ -239,6 +243,8 @@ public class InterlockingImpl implements Interlocking {
       }
     }
 
+    int trainsMoved = 0;
+
     // Check if the train is in the destination track section
     // If it is, remove the tokens from the destination track section
     for (String trainName : trainNames) {
@@ -250,10 +256,169 @@ public class InterlockingImpl implements Interlocking {
       ) {
         trackSections.get(curTrain.getDestinationTrackSection()).removeTokens();
         trains.remove(trainName);
+        trainsMoved++;
       }
     }
 
-    return 0;
+    // Move the trains
+    for (String trainName : trainNames) {
+      Trains curTrain = trains.get(trainName);
+
+      // Move the train to the next track section
+      if (curTrain != null) {
+        int trainCurrentTrackSection = curTrain.getCurrentTrackSection();
+        int trainDestinationTrackSection = curTrain.getDestinationTrackSection();
+
+        Transitions transitionToFire = findTransitionToFire(
+          trainCurrentTrackSection,
+          trainDestinationTrackSection
+        );
+
+        // Check if the transition can be fired and fire it
+        if (transitionToFire != null && transitionToFire.isEnabled()) {
+          transitionToFire.fire();
+          trainsMoved++;
+
+          int newSection = getNewSection(
+            trainCurrentTrackSection,
+            trainDestinationTrackSection
+          );
+
+          // Update train's position
+          trains.get(trainName).setCurrentTrackSection(newSection);
+        }
+      }
+    }
+
+    return trainsMoved;
+  }
+
+  /**
+   * Find the transition to fire by using breadth first search
+   *
+   * @param currentSection the current track section
+   * @param destinationSection the destination track section
+   * @return the transition to fire
+   */
+  private Transitions findTransitionToFire(
+    int currentSection,
+    int destinationSection
+  ) {
+    Set<Integer> visited = new HashSet<>();
+    Queue<int[]> queue = new LinkedList<>();
+
+    queue.offer(new int[] { currentSection, -1 });
+
+    while (!queue.isEmpty()) {
+      int[] current = queue.poll();
+      int section = current[0];
+      int transitionIndex = current[1];
+
+      // If we've reached the destination, return the first transition
+      if (section == destinationSection) {
+        return transitionIndex != -1 ? transitions.get(transitionIndex) : null;
+      }
+
+      // Skip if we've already visited this section
+      if (visited.contains(section)) {
+        continue;
+      }
+      visited.add(section);
+
+      // Explore all possible transitions from this section
+      for (int i = 0; i < transitions.size(); i++) {
+        Transitions transition = transitions.get(i);
+        if (isValidTransition(transition, section)) {
+          int nextSection = getNextSection(transition, section);
+          // If the next section hasn't been visited, add it to the queue
+          if (!visited.contains(nextSection)) {
+            queue.offer(
+              new int[] {
+                nextSection,
+                // If this is the first transition, store its index
+                transitionIndex == -1 ? i : transitionIndex,
+              }
+            );
+          }
+        }
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Check if the transition is valid
+   *
+   * @param transition the transition
+   * @param currentSection the current track section
+   * @return true if the transition is valid, false otherwise
+   */
+  private boolean isValidTransition(
+    Transitions transition,
+    int currentSection
+  ) {
+    for (Arcs inputArc : transition.inputArcs) {
+      if (inputArc.getDeparture().id == currentSection) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Get the next section
+   *
+   * @param transition the transition
+   * @param currentSection the current track section
+   * @return the next track section
+   */
+  private int getNextSection(Transitions transition, int currentSection) {
+    // Find the next section
+    for (Arcs outputArc : transition.outputArcs) {
+      if (outputArc.getDestination().id != currentSection) {
+        return outputArc.getDestination().id;
+      }
+    }
+
+    return -1;
+  }
+
+  /**
+   * Get the new section
+   *
+   * @param currentSection the current track section
+   * @param destinationSection the destination track section
+   * @return the new track section
+   */
+  private int getNewSection(int currentSection, int destinationSection) {
+    switch (currentSection) {
+      case 1:
+      case 9:
+        if (destinationSection == 2) return 6;
+        return 5;
+      case 2:
+      case 10:
+        return 6;
+      case 3:
+        if (destinationSection == 4) return destinationSection;
+        return 7;
+      case 4:
+        if (destinationSection == 3) return destinationSection;
+        return 7;
+      case 8:
+        if (destinationSection == 1) return 5;
+        break;
+      case 5:
+      case 6:
+      case 7:
+        return destinationSection;
+      case 11:
+        return 7;
+    }
+
+    return currentSection; // This should never happen
   }
 
   /**
